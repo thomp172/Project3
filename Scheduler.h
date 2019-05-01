@@ -6,6 +6,8 @@
 #include <Windows.h>
 #include <string>
 #include "Semaphore.h"
+#include <list>
+#include <iterator>
 class Scheduler //rate monotonic scheduler
 {
 public:
@@ -26,6 +28,7 @@ private:
 	Semaphore* sem4;
 	Semaphore* semT;
 	void init();
+
 	//thread
 	void doWork(int unit);
 	void timer();

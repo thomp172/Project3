@@ -61,17 +61,24 @@ void Scheduler::execute(int unit)
 	{
 		
 		doWork(unit);
-		
+		//sem1->wait();
 	}
 	if (unit == 1)
 	{
 		//sem->signal();
 		sem2->signal();
+		//sem1->signal();
 	}
 	else if (unit == 2)
+	{
 		sem3->signal();
+		//sem1->signal();
+	}
 	else if (unit == 4)
+	{
 		sem4->signal();
+		//sem1->signal();
+	}
 }
 void Scheduler::doWork(int unit)
 {
@@ -93,38 +100,46 @@ void Scheduler::doWork(int unit)
 }
 void Scheduler::schedule()
 {
-
+	//list<thread> arr;
+	thread arr[40];
+	int i = 0;
 	while (t<CYCLE)
 	{
 		semT->wait();
 		cout << " U: 1" << endl;
-		thread thr1 = thread(&Scheduler::execute, this, 1);
-		thr1.join();
-
+		arr[i] = thread(&Scheduler::execute, this, 1);
+		//thr1.join();
+		i++;
 		sem2->wait();
 		cout << " U: 2" << endl;
-		thread thr2 = thread(&Scheduler::execute, this, 2);
-		thr2.join();
-
+		arr[i] = thread(&Scheduler::execute, this, 2);
+		//thr2.join();
+		i++;
 		sem3->wait();
 		cout << " U: 4" << endl;
-		thread thr3 = thread(&Scheduler::execute, this, 4);
-		thr3.join();
-
+		arr[i] = thread(&Scheduler::execute, this, 4);
+		//thr3.join();
+		i++;
 		sem4->wait();
 		cout << " U: 16" << endl;
-		thread thr4 = thread(&Scheduler::execute, this, 16);
-		thr4.join();
+		arr[i] = thread(&Scheduler::execute, this, 16);
+		i++;
+	}
+	///thread thr = thread(&Scheduler::execute, this, 1);
+	for (int j = 0; j < i; j++)
+	{
+		arr[j].join();
 	}
 }
 void Scheduler::timer()
 {
 	thread thrR;// = thread(&Scheduler::schedule, this);
-	for (int i = 1; i <= 10; i++)
+	for (int i = 0; i < 10; i++)
 	{
+		t = 0;
 		while (t < CYCLE) //16 time units each cycle
 		{
-			cout << "\nT: " << t*i;
+			cout << "\nT: " << CYCLE*i + t;
 			if (t == 0)
 			{
 				semT->signal();
