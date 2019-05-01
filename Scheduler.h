@@ -22,12 +22,14 @@ private:
 	string output;
 	Semaphore* sem1;
 	Semaphore* sem2;
+	Semaphore* sem3;
+	Semaphore* sem4;
 	Semaphore* semT;
 	void init();
 	//thread
 	void doWork(int unit);
 	void timer();
-	void execute(int unit, Semaphore* sem);
+	void execute(int unit);
 	void schedule();
 
 	
