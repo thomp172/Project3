@@ -18,15 +18,20 @@ private:
 	double b;
 	int** work;
 	const static int SIZE = 10;
-	const static int SLEEP = 10;
+	const static int SLEEP = 100;
 	const static int CYCLE = 16;
 	int current;
+	bool bool1;
+	bool bool2;
+	bool bool3;
+	bool bool4;
 	string output;
 	Semaphore* sem1;
 	Semaphore* sem2;
 	Semaphore* sem3;
 	Semaphore* sem4;
 	Semaphore* semT;
+	Semaphore* semR;
 	void init();
 
 	//thread
