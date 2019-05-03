@@ -6,8 +6,6 @@
 #include <Windows.h>
 #include <string>
 #include "Semaphore.h"
-#include <list>
-#include <iterator>
 class Scheduler //rate monotonic scheduler
 {
 public:
@@ -18,9 +16,14 @@ private:
 	double b;
 	int** work;
 	const static int SIZE = 10;
-	const static int SLEEP = 100;
+	const static int SLEEP = 10;
 	const static int CYCLE = 16;
-	int current;
+
+	int TASK1 = 1;
+	int TASK2 = 2;
+	int TASK3 = 4;
+	int TASK4 = 16;
+	string current;
 	bool bool1;
 	bool bool2;
 	bool bool3;
@@ -38,7 +41,6 @@ private:
 	void doWork(int unit);
 	void timer();
 	void execute(int unit);
-	void schedule();
 
 	
 };
