@@ -4,14 +4,39 @@
 #include "pch.h"
 int main()
 {
-	Scheduler* sch = new Scheduler();
+	for (int i=0; i<10; i++)
+		Scheduler* sch = new Scheduler(i*16);
 }
 
 Scheduler::Scheduler()
 {
 	//timer begins at 0
 	t = 0;
-	//initialize work**
+	init();
+	begin();
+}
+
+Scheduler::Scheduler(int start)
+{
+	//timer begins at start
+	t = start;
+	//begin
+	init();
+	begin();
+}
+
+Scheduler::~Scheduler()
+{
+	delete work;
+	delete sem1;
+	delete sem2;
+	delete sem3;
+	delete sem4;
+}
+
+//functions
+void Scheduler::init()
+{
 	work = new int*[SIZE];
 	for (int k = 0; k < SIZE; k++)
 	{
@@ -30,8 +55,6 @@ Scheduler::Scheduler()
 	sem2 = new Semaphore();
 	sem3 = new Semaphore();
 	sem4 = new Semaphore();
-	semT = new Semaphore();
-	semR = new Semaphore(1);
 	//initialize output
 	output = "";
 	//initialize booleans
@@ -40,57 +63,38 @@ Scheduler::Scheduler()
 	bool3 = false;
 	bool4 = false;
 
-	output += "Task 1: Deadline=" + to_string(TASK1);
-	output += "\nTask 2: Deadline=" + to_string(TASK2);
-	output += "\nTask 3: Deadline=" + to_string(TASK3);
-	output += "\nTask 4: Deadline=" + to_string(TASK4);
-	//begin
-	init();
+	output += "\nTask 1: Release=" + to_string(t);
+	output += "\nTask 2: Release=" + to_string(t);
+	output += "\nTask 3: Release=" + to_string(t);
+	output += "\nTask 4: Release=" + to_string(t);
+	output += "\nTask 1: Deadline=" + to_string(TASK1+t);
+	output += "\nTask 2: Deadline=" + to_string(TASK2+t);
+	output += "\nTask 3: Deadline=" + to_string(TASK3+t);
+	output += "\nTask 4: Deadline=" + to_string(TASK4+t);
+	output += "\n";
 }
-
-
-Scheduler::~Scheduler()
+void Scheduler::begin()
 {
-	delete work;
-	delete sem1;
-	delete sem2;
-	delete sem3;
-	delete sem4;
-	delete semT;
-	delete semR;
-}
-
-//functions
-void Scheduler::init()
-{
-	//thread thrR = thread(&Scheduler::schedule, this);
-	//timer();
-	
 	thread thrT = thread(&Scheduler::timer, this);
-	//thread thrR = thread(&Scheduler::rms, this);
-	//thrT.join();
-	//thrR.join();
 
 	thread thr1 = thread(&Scheduler::execute, this, TASK1);
 	thread thr2 = thread(&Scheduler::execute, this, TASK2);
 	thread thr3 = thread(&Scheduler::execute, this, TASK3);
 	thread thr4 = thread(&Scheduler::execute, this, TASK4);
-	//thrT.join();
-	//thrR.join();
-	//thrT.join();
+	
 	thr1.join();
 	thr2.join();
 	thr3.join();
 	thr4.join();
+
 	thrT.join();
-
-
 
 }
 
 //thread to be called
 void Scheduler::execute(int unit)
 {
+	
 	string out;
 	int time = t;
 	//repeat doWork() as many times as there are units
@@ -172,17 +176,17 @@ void Scheduler::doWork(int unit)
 
 void Scheduler::timer()
 {
-	t = 0;
+	int time = 0;
+	int arr = 0;
 	string temp;
 	string compare = "begin";
-	while (t < CYCLE) //16 time units each cycle
+	while (time < CYCLE) //16 time units each cycle
 	{
-		
-		if ((t < TASK1) && (bool1 == false))
+		if ((time < TASK1) && (bool1 == false))
 		{
 			sem1->signal();
 		}
-		if ((t >= TASK1) && (t < TASK2) && (bool2 == false))
+		if ((time >= TASK1) && (time < TASK2) && (bool2 == false))
 		{
 			if (bool1 == false)
 			{
@@ -191,7 +195,7 @@ void Scheduler::timer()
 			}
 			sem2->signal();
 		}
-		if ((t >= TASK2) && (t < TASK3) && (bool3 == false))
+		if ((time >= TASK2) && (time < TASK3) && (bool3 == false))
 		{
 			if (bool2 == false)
 			{
@@ -201,7 +205,7 @@ void Scheduler::timer()
 				
 			sem3->signal();
 		}
-		if ((t >= TASK3) && (t < TASK4) && (bool4 == false))
+		if ((time >= TASK3) && (time < TASK4) && (bool4 == false))
 		{
 			if (bool3 == false)
 			{
@@ -210,12 +214,13 @@ void Scheduler::timer()
 			}
 			sem4->signal();
 		}
-
+		if ((time >= TASK4) && (bool4 == false))
+			output += "\nT: " + to_string(t) + " Task 4 missed deadline";
 		Sleep(SLEEP);
 		t++;
+		time++;
 	}
-	if (bool4 == false)
-		output += "\nT: " + to_string(t) + " Task 4 missed deadline";
+	
 	cout << output << endl;
-	exit(0);
+	//exit(0);
 }

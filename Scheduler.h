@@ -10,10 +10,10 @@ class Scheduler //rate monotonic scheduler
 {
 public:
 	Scheduler();
+	Scheduler(int start);
 	~Scheduler();
 private:
 	int t;
-	double b;
 	int** work;
 	const static int SIZE = 10;
 	const static int SLEEP = 10;
@@ -33,9 +33,8 @@ private:
 	Semaphore* sem2;
 	Semaphore* sem3;
 	Semaphore* sem4;
-	Semaphore* semT;
-	Semaphore* semR;
 	void init();
+	void begin();
 
 	//thread
 	void doWork(int unit);
