@@ -4,11 +4,10 @@
 #include "pch.h"
 int main()
 {
-
 	system("PAUSE");
 	string output = "";
 	for (int i = 0; i < 10; i++)
-	{
+	{//repeat program 10 times
 		Scheduler* sch = new Scheduler(i * 16);
 		output +=  sch->getOutput() + "\n\n";
 	}
@@ -17,6 +16,7 @@ int main()
 	
 }
 
+//Scheduler class
 Scheduler::Scheduler()
 {
 	//timer begins at 0
@@ -70,11 +70,6 @@ void Scheduler::init()
 	sem4 = new Semaphore();
 	//initialize output
 	output = "";
-	//initialize booleans
-	bool1 = false;
-	bool2 = false;
-	bool3 = false;
-	bool4 = false;
 
 	output += "Task 1: Release=" + to_string(t);
 	output += "\nTask 2: Release=" + to_string(t);
@@ -88,106 +83,31 @@ void Scheduler::init()
 }
 void Scheduler::begin()
 {
-	thread thrT = thread([&](Scheduler * sch) {
+	//timer thread
+	thrT = thread([&](Scheduler * sch) {
 		sch->timer();
 	}, this);
-	thread thr1 = thread([&] (Scheduler * sch) {
-		sem1->wait();
-		output += "\nT: " + to_string(t) + " Task 1 begins";
-		//repeat doWork() as many times as there are units
-		for (int i = 0; i < TASK1; i++)
-		{
-			doWork(TASK1);
-			if (time >= TASK1)
-			{
-				output += "\nT: " + to_string(t) + " Task 1 missed deadline";
-				bool1 = true;
-				sem2->signal();
-				return;
-			}
-		}
-		if (bool1 == false)
-		{
-			output += "\nT: " + to_string(t) + " Task 1 finished";
-			bool1 = true;
-		}
-		sem2->signal();
-	}, this);
-	thread thr2 = thread([&](Scheduler * sch) {
-		sem2->wait();
-		output += "\nT: " + to_string(t) + " Task 2 begins";
-		//repeat doWork() as many times as there are units
-		for (int i = 0; i < TASK2; i++)
-		{
-			doWork(TASK2);
-			if (time >= TASK2)
-			{
-				output += "\nT: " + to_string(t) + " Task 2 missed deadline";
-				bool2 = true;
-				sem3->signal();
-				return; 
-			}
-		}
-		if (bool2 == false)
-		{
-			output += "\nT: " + to_string(t) + " Task 2 finished";
-			bool2 = true;
-		}
-		sem3->signal();
-	}, this);
-	thread thr3 = thread([&](Scheduler * sch) {
-		sem3->wait();
-		output += "\nT: " + to_string(t) + " Task 3 begins";
-		//repeat doWork() as many times as there are units
-		for (int i = 0; i < TASK3; i++)
-		{
-			doWork(TASK3);
-			if (time >= TASK3)
-			{
-				output += "\nT: " + to_string(t) + " Task 3 missed deadline";
-				bool3 = true;
-				sem4->signal();
-				return;
-			}
-
-		}
-		if (bool3 == false)
-		{
-			output += "\nT: " + to_string(t) + " Task 3 finished";
-			bool3 = true;
-		}
-		sem4->signal();
-	}, this);
-	thread thr4 = thread([&](Scheduler * sch) {
-		sem4->wait();
-		output += "\nT: " + to_string(t) + " Task 4 begins";
-		//repeat doWork() as many times as there are units
-		for (int i = 0; i < TASK4; i++)
-		{
-			doWork(TASK4);
-			if (time >= TASK4)
-			{
-				output += "\nT: " + to_string(t) + " Task 4 missed deadline";
-				bool4 = true;
-				return;
-			}
-		}
-		if (bool4 == false)
-		{
-			output += "\nT: " + to_string(t) + " Task 4 finished";
-			bool4 = true;
-		}
-	}, this);
-	thr1.join();
-	thr2.join();
-	thr3.join();
-	thr4.join();
-
 	thrT.join();
 
 }
 
-
+void Scheduler::execute(int unit, Semaphore* semThis, string task)
+{
+	semThis->wait();
+	output += "\nT: " + to_string(t) + " " + task + " begins";
+	//repeat doWork() as many times as there are units
+	for (int i = 0; i < unit; i++)
+	{
+		doWork(unit);
+		if (time >= unit)
+		{
+			output += "\nT: " + to_string(t) + " " + task + " missed deadline";
+			return;
+		}
+	}
+	output += "\nT: " + to_string(t) + " " + task + " finished";
+		
+}
 void Scheduler::doWork(int unit)
 {
 	if (unit == TASK1)
@@ -199,8 +119,9 @@ void Scheduler::doWork(int unit)
 	else if (unit == TASK4)
 		current = "Task 4";
 	int m, n, temp;
-	for (int i=0; i<18000; i++)
+	for (int i=0; i<7000; i++)
 	{
+		//exit function if time deadline is hit
 		if (time >= unit)
 			return;
 		//execute multiplication of array
@@ -219,55 +140,38 @@ void Scheduler::doWork(int unit)
 void Scheduler::timer()
 {
 	time = 0;
-	int arr = 0;
-	string temp;
-	string compare = "begin";
 	while (time <= CYCLE) //16 time units each cycle
 	{
-		//must fix if statement time comparisons.... need threads 
-		//to start early if previous threads already finished
-		if ((time < TASK1) && (bool1 == false))
-		{
+		if (time == 0)
+		{//initiate thread start
+			//task threads
+			thr1 = thread([&](Scheduler * sch) {
+				execute(TASK1, sem1, "Task 1");
+				sem2->signal();
+			}, this);
+			thr2 = thread([&](Scheduler * sch) {
+				execute(TASK2, sem2, "Task 2");
+				sem3->signal();
+			}, this);
+			thr3 = thread([&](Scheduler * sch) {
+				execute(TASK3, sem3, "Task 3");
+				sem4->signal();
+			}, this);
+			thr4 = thread([&](Scheduler * sch) {
+				execute(TASK4, sem4, "Task 4");
+			}, this);
 			sem1->signal();
 		}
-		//else if ((time < TASK2) && (bool2 == false))
-		//{
-		//	if (bool1 == false)
-		//	{
-		//		output += "\nT: " + to_string(t) + " Task 1 missed deadline";
-		//		bool1 = true;
-		//	}
-		//	//sem2->signal();
-		//}
-		//else if ((time < TASK3) && (bool3 == false))
-		//{
-		//	if (bool2 == false)
-		//	{
-		//		output += "\nT: " + to_string(t) + " Task 2 missed deadline";
-		//		bool2 = true;
-		//	}
-		//		
-		//	//sem3->signal();
-		//}
-		//else if ((time < TASK4) && (bool4 == false))
-		//{
-		//	if (bool3 == false)
-		//	{
-		//		output += "\nT: " + to_string(t) + " Task 3 missed deadline";
-		//		bool3 = true;
-		//	}
-		//	//sem4->signal();
-		//}
-		//else if ((time >= TASK4) && (bool4 == false))
-		//{
-		//	output += "\nT: " + to_string(t) + " Task 4 missed deadline";
-		//	bool4 = true;
-		//}
 		Sleep(SLEEP);
 		t++;
 		time++;
+		if (t == 0)
+		{
+			thr1.join();
+			thr2.join();
+			thr3.join();
+			thr4.join();
+		}
 	}
 	
-	//cout << output << endl;
-	//exit(0);
 }
