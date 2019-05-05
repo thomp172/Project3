@@ -13,6 +13,8 @@ public:
 	Scheduler(int start);
 	~Scheduler();
 	string getOutput();
+	int* getExe();
+	int* getRun();
 private:
 	int t;
 	int time;
@@ -20,11 +22,11 @@ private:
 	const static int SIZE = 10;
 	const static int SLEEP = 10;
 	const static int CYCLE = 16;
+	const static int TASK1 = 1;
+	const static int TASK2 = 2;
+	const static int TASK3 = 4;
+	const static int TASK4 = 16;
 
-	int TASK1 = 1;
-	int TASK2 = 2;
-	int TASK3 = 4;
-	int TASK4 = 16;
 	string current;
 	string output;
 
@@ -38,13 +40,24 @@ private:
 	thread thr3;
 	thread thr4;
 
+	int exe[4];
+	int run[4];
+	int start1;
+	int start2;
+	int start3;
+	int start4;
+	int run1;
+	int run2;
+	int run3;
+	int run4;
+
 
 	void init();
 	void begin();
 
 	//thread
-	void execute(int unit, Semaphore* semThis, string task);
-	void doWork(int unit);
+	void execute(int unit, Semaphore* semThis, string task, int& run);
+	bool doWork(int unit, string task, bool overrun, int& run);
 	void timer();
 	
 	
