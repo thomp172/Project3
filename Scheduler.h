@@ -4,21 +4,25 @@
 #include <stdio.h>
 #include <thread>
 #include <Windows.h>
+#include <fstream>
 #include <string>
+#include <chrono>
 #include "Semaphore.h"
 class Scheduler //rate monotonic scheduler
 {
 public:
 	Scheduler();
-	Scheduler(int start);
+	Scheduler(int start, int theRepeat);
 	~Scheduler();
 	string getOutput();
 	int* getExe();
 	int* getRun();
+	string toString();
 private:
 	int t;
 	int time;
 	int** work;
+	int repeat;
 	const static int SIZE = 10;
 	const static int SLEEP = 10;
 	const static int CYCLE = 16;
@@ -27,7 +31,6 @@ private:
 	const static int TASK3 = 4;
 	const static int TASK4 = 16;
 
-	string current;
 	string output;
 
 	Semaphore* sem1;
@@ -42,14 +45,6 @@ private:
 
 	int exe[4];
 	int run[4];
-	int start1;
-	int start2;
-	int start3;
-	int start4;
-	int run1;
-	int run2;
-	int run3;
-	int run4;
 
 
 	void init();
@@ -57,7 +52,7 @@ private:
 
 	//thread
 	void execute(int unit, Semaphore* semThis, string task, int& run);
-	bool doWork(int unit, string task, bool overrun, int& run);
+	bool doWork(int unit, string task, int& run);
 	void timer();
 	
 	

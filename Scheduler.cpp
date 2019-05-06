@@ -4,31 +4,41 @@
 #include "pch.h"
 int main()
 {
-	system("PAUSE");
-	int start[4] = { 0,0,0,0 };
-	int run[4] = { 0, 0, 0, 0 };
-	string output = "";
-	int m, n;
-	for (int i = 0; i < 10; i++)
-	{//repeat program 10 times
-		Scheduler* sch = new Scheduler(i * 16);
-		output +=  sch->getOutput() + "\n\n";
-		for (m = 0; m < 4; m++)
-		{
-			start[m] += sch->getExe()[m];
-			run[m] += sch->getRun()[m];
-		}
-		
-	}
-	/*Scheduler* sch = new Scheduler();
-	output += sch->getOutput() + "\n\n";*/
-	cout << output << endl;
-	for (int j = 0; j < 4; j++)
+
+	string file;
+	int repeat = 0;
+	for (int r=1; r<=3; r++)
 	{
-		cout << "Task " + to_string(j + 1) + " ran " + to_string(start[j]) + " times." << endl;
-		cout << "Task " + to_string(j + 1) + " overran " + to_string(run[j]) + " times." << endl;
+		int start[4] = { 0,0,0,0 };
+		int run[4] = { 0, 0, 0, 0 };
+		string output = "";
+		ofstream out;
+		
+		file = "Case" + to_string(r) + ".out";
+		cout << "loading " << file << endl;
+		out.open(file);
+		int m;
+		for (int i = 0; i < 10; i++)
+		{//repeat program 10 times
+			Scheduler* sch = new Scheduler(i * 16,r);
+			output += sch->getOutput() + "\n\n";
+			for (m = 0; m < 4; m++)
+			{
+				start[m] += sch->getExe()[m];
+				run[m] += sch->getRun()[m];
+			}
+
+		}
+		out << output << endl;
+		for (int j = 0; j < 4; j++)
+		{
+			out << "Task " + to_string(j + 1) + " ran " + to_string(start[j]) + " times." << endl;
+			out << "Task " + to_string(j + 1) + " overran " + to_string(run[j]) + " times." << endl;
+		}
+		out.close();
 	}
-	system("PAUSE");
+
+	cout << "done" << endl;
 	
 }
 
@@ -37,14 +47,16 @@ Scheduler::Scheduler()
 {
 	//timer begins at 0
 	t = 0;
+	repeat = 10000;
 	init();
 	begin();
 }
 
-Scheduler::Scheduler(int start)
+Scheduler::Scheduler(int start, int theRepeat)
 {
 	//timer begins at start
 	t = start;
+	repeat = theRepeat;
 	//begin
 	init();
 	begin();
@@ -59,19 +71,7 @@ Scheduler::~Scheduler()
 	delete sem4;
 }
 
-string Scheduler::getOutput()
-{
-	return output;
-}
 
-int* Scheduler::getExe()
-{
-	return exe;
-}
-int* Scheduler::getRun()
-{
-	return run;
-}
 //functions
 void Scheduler::init()
 {
@@ -127,30 +127,35 @@ void Scheduler::begin()
 void Scheduler::execute(int unit, Semaphore* semThis, string task, int &run)
 {
 	semThis->wait();
+	//set processor affinity
+	HANDLE hProcess = GetCurrentProcess();
+	SetProcessAffinityMask(hProcess, 1);
 	bool overrun = false;
 	output += "\nT: " + to_string(t) + " " + task + " begins";
 	//repeat doWork() as many times as there are units
-	for (int i = 0; i < unit; i++)
+	
+	if (((repeat == 2) && (unit == TASK2)) || ((repeat == 3) && (unit == TASK3)))
 	{
-		overrun = doWork(unit, task, overrun, run);
-		if (time >= CYCLE)
-			return;
+		while (overrun == false)
+			overrun = doWork(unit, task, run);
+	}
+	else
+	{
+		for (int i = 0; i < unit; i++)
+		{
+			overrun = doWork(unit, task, run);
+			if ((overrun == true) && (unit == TASK4))
+				return;
+		}
 	}
 	output += "\nT: " + to_string(t) + " " + task + " finished";
 
 }
-bool Scheduler::doWork(int unit, string task, bool overrun, int& run)
+bool Scheduler::doWork(int unit, string task, int& run)
 {
-	if (unit == TASK1)
-		current = "Task 1";
-	else if (unit == TASK2)
-		current = "Task 2";
-	else if (unit == TASK3)
-		current = "Task 3";
-	else if (unit == TASK4)
-		current = "Task 4";
+	bool overrun = false;
 	int m, n, temp;
-	for (int i=0; i<10000; i++)
+	for (int i=0; i<10500; i++)
 	{
 		//exit function if time deadline is hit
 		if ((time >= unit) && (overrun == false))
@@ -159,10 +164,11 @@ bool Scheduler::doWork(int unit, string task, bool overrun, int& run)
 			//return;
 			run++;
 			overrun = true;
-		}
-		if (time >= CYCLE)
-		{
-			return overrun;
+			if ((overrun == true) && (unit == TASK4))
+			{
+				output += "\nT: " + to_string(t) + " " + task + " cannot complete";
+				return overrun;
+			}
 		}
 		//execute multiplication of array
 		for (m = 0; m < SIZE; m++)
@@ -180,6 +186,9 @@ bool Scheduler::doWork(int unit, string task, bool overrun, int& run)
 
 void Scheduler::timer()
 {
+	//set processor affinity
+	HANDLE hProcess = GetCurrentProcess();
+	SetProcessAffinityMask(hProcess, 1);
 	time = 0;
 	while (time <= CYCLE) //16 time units each cycle
 	{
@@ -207,7 +216,8 @@ void Scheduler::timer()
 			}, this);
 			sem1->signal();
 		}
-		Sleep(SLEEP);
+		chrono::milliseconds dura(SLEEP);
+		this_thread::sleep_for(dura);
 		t++;
 		time++;
 		if (time == 0)
@@ -218,4 +228,30 @@ void Scheduler::timer()
 			thr4.join();
 		}
 	}
+
+
+}
+
+string Scheduler::getOutput()
+{
+	return output;
+}
+
+int* Scheduler::getExe()
+{
+	return exe;
+}
+int* Scheduler::getRun()
+{
+	return run;
+}
+string Scheduler::toString()
+{
+	string counts = "";
+	for (int j = 0; j < 4; j++)
+	{
+		counts += "\nTask " + to_string(j + 1) + " ran " + to_string(exe[j]) + " times.";
+		counts += "\nTask " + to_string(j + 1) + " overran " + to_string(run[j]) + " times.";
+	}
+	return output + counts;
 }
