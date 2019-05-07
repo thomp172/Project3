@@ -1,3 +1,5 @@
+
+
 Task 1: Release=0
 Task 2: Release=0
 Task 3: Release=0
@@ -13,195 +15,181 @@ T: 0 Task 2 begins
 T: 0 Task 2 finished
 T: 0 Task 3 begins
 T: 4 Task 3 missed deadline
-T: 4 Task 3 finished
 T: 4 Task 4 begins
 T: 12 Task 4 finished
 
-Task 1: Release=16
-Task 2: Release=16
-Task 3: Release=16
-Task 4: Release=16
-Task 1: Deadline=17
-Task 2: Deadline=18
-Task 3: Deadline=20
-Task 4: Deadline=32
+Task 1: Release=17
+Task 2: Release=17
+Task 3: Release=17
+Task 4: Release=17
+Task 1: Deadline=18
+Task 2: Deadline=19
+Task 3: Deadline=21
+Task 4: Deadline=33
 
-T: 16 Task 1 begins
-T: 16 Task 1 finished
-T: 16 Task 2 begins
-T: 16 Task 2 finished
-T: 16 Task 3 begins
-T: 20 Task 3 missed deadline
-T: 20 Task 3 finished
-T: 20 Task 4 begins
+T: 17 Task 1 begins
+T: 17 Task 1 finished
+T: 17 Task 2 begins
+T: 17 Task 2 finished
+T: 18 Task 3 continues
+T: 18 Task 3 finished
+T: 18 Task 4 begins
 T: 28 Task 4 finished
 
-Task 1: Release=32
-Task 2: Release=32
-Task 3: Release=32
-Task 4: Release=32
-Task 1: Deadline=33
-Task 2: Deadline=34
-Task 3: Deadline=36
-Task 4: Deadline=48
+Task 1: Release=34
+Task 2: Release=34
+Task 3: Release=34
+Task 4: Release=34
+Task 1: Deadline=35
+Task 2: Deadline=36
+Task 3: Deadline=38
+Task 4: Deadline=50
 
-T: 32 Task 1 begins
-T: 32 Task 1 finished
-T: 32 Task 2 begins
-T: 32 Task 2 finished
-T: 32 Task 3 begins
-T: 36 Task 3 missed deadline
-T: 36 Task 3 finished
-T: 36 Task 4 begins
-T: 44 Task 4 finished
+T: 34 Task 1 begins
+T: 34 Task 1 finished
+T: 34 Task 2 begins
+T: 34 Task 2 finished
+T: 35 Task 3 begins
+T: 38 Task 3 missed deadline
+T: 38 Task 4 begins
+T: 46 Task 4 finished
 
-Task 1: Release=48
-Task 2: Release=48
-Task 3: Release=48
-Task 4: Release=48
-Task 1: Deadline=49
-Task 2: Deadline=50
-Task 3: Deadline=52
-Task 4: Deadline=64
+Task 1: Release=51
+Task 2: Release=51
+Task 3: Release=51
+Task 4: Release=51
+Task 1: Deadline=52
+Task 2: Deadline=53
+Task 3: Deadline=55
+Task 4: Deadline=67
 
-T: 48 Task 1 begins
-T: 48 Task 1 finished
-T: 48 Task 2 begins
-T: 48 Task 2 finished
-T: 48 Task 3 begins
-T: 52 Task 3 missed deadline
-T: 52 Task 3 finished
-T: 52 Task 4 begins
-T: 64 Task 4 missed deadline
-T: 64 Task 4 cannot complete
+T: 51 Task 1 begins
+T: 51 Task 1 finished
+T: 51 Task 2 begins
+T: 51 Task 2 finished
+T: 52 Task 3 begins
+T: 55 Task 3 missed deadline
+T: 55 Task 4 begins
+T: 63 Task 4 finished
 
-Task 1: Release=64
-Task 2: Release=64
-Task 3: Release=64
-Task 4: Release=64
-Task 1: Deadline=65
-Task 2: Deadline=66
-Task 3: Deadline=68
-Task 4: Deadline=80
+Task 1: Release=68
+Task 2: Release=68
+Task 3: Release=68
+Task 4: Release=68
+Task 1: Deadline=69
+Task 2: Deadline=70
+Task 3: Deadline=72
+Task 4: Deadline=84
 
-T: 64 Task 1 begins
-T: 64 Task 1 finished
-T: 64 Task 2 begins
-T: 65 Task 2 finished
-T: 65 Task 3 begins
-T: 68 Task 3 missed deadline
+T: 68 Task 1 begins
+T: 68 Task 1 finished
+T: 68 Task 2 begins
+T: 68 Task 2 finished
+T: 69 Task 3 continues
 T: 69 Task 3 finished
 T: 69 Task 4 begins
-T: 80 Task 4 missed deadline
-T: 80 Task 4 cannot complete
+T: 79 Task 4 finished
 
-Task 1: Release=80
-Task 2: Release=80
-Task 3: Release=80
-Task 4: Release=80
-Task 1: Deadline=81
-Task 2: Deadline=82
-Task 3: Deadline=84
-Task 4: Deadline=96
+Task 1: Release=85
+Task 2: Release=85
+Task 3: Release=85
+Task 4: Release=85
+Task 1: Deadline=86
+Task 2: Deadline=87
+Task 3: Deadline=89
+Task 4: Deadline=101
 
-T: 80 Task 1 begins
-T: 80 Task 1 finished
-T: 80 Task 2 begins
-T: 80 Task 2 finished
-T: 80 Task 3 begins
-T: 84 Task 3 missed deadline
-T: 85 Task 3 finished
-T: 85 Task 4 begins
-T: 96 Task 4 missed deadline
-T: 96 Task 4 cannot complete
+T: 85 Task 1 begins
+T: 85 Task 1 finished
+T: 85 Task 2 begins
+T: 85 Task 2 finished
+T: 86 Task 3 begins
+T: 89 Task 3 missed deadline
+T: 89 Task 4 begins
+T: 97 Task 4 finished
 
-Task 1: Release=96
-Task 2: Release=96
-Task 3: Release=96
-Task 4: Release=96
-Task 1: Deadline=97
-Task 2: Deadline=98
-Task 3: Deadline=100
-Task 4: Deadline=112
+Task 1: Release=102
+Task 2: Release=102
+Task 3: Release=102
+Task 4: Release=102
+Task 1: Deadline=103
+Task 2: Deadline=104
+Task 3: Deadline=106
+Task 4: Deadline=118
 
-T: 96 Task 1 begins
-T: 96 Task 1 finished
-T: 96 Task 2 begins
-T: 96 Task 2 finished
-T: 96 Task 3 begins
-T: 100 Task 3 missed deadline
-T: 100 Task 3 finished
-T: 100 Task 4 begins
-T: 112 Task 4 missed deadline
-T: 112 Task 4 cannot complete
+T: 102 Task 1 begins
+T: 102 Task 1 finished
+T: 102 Task 2 begins
+T: 102 Task 2 finished
+T: 103 Task 3 continues
+T: 103 Task 3 finished
+T: 103 Task 4 begins
+T: 113 Task 4 finished
 
-Task 1: Release=112
-Task 2: Release=112
-Task 3: Release=112
-Task 4: Release=112
-Task 1: Deadline=113
-Task 2: Deadline=114
-Task 3: Deadline=116
-Task 4: Deadline=128
+Task 1: Release=119
+Task 2: Release=119
+Task 3: Release=119
+Task 4: Release=119
+Task 1: Deadline=120
+Task 2: Deadline=121
+Task 3: Deadline=123
+Task 4: Deadline=135
 
-T: 112 Task 1 begins
-T: 112 Task 1 finished
-T: 112 Task 2 begins
-T: 114 Task 2 missed deadline
-T: 114 Task 2 finished
-T: 114 Task 3 begins
-T: 116 Task 3 missed deadline
-T: 117 Task 3 finished
-T: 117 Task 4 begins
-T: 128 Task 4 missed deadline
-T: 128 Task 4 cannot complete
+T: 119 Task 1 begins
+T: 120 Task 1 missed deadline
+T: 120 Task 2 begins
+T: 120 Task 2 finished
+T: 121 Task 3 begins
+T: 123 Task 3 missed deadline
+T: 123 Task 4 begins
+T: 131 Task 4 finished
 
-Task 1: Release=128
-Task 2: Release=128
-Task 3: Release=128
-Task 4: Release=128
-Task 1: Deadline=129
-Task 2: Deadline=130
-Task 3: Deadline=132
-Task 4: Deadline=144
+Task 1: Release=136
+Task 2: Release=136
+Task 3: Release=136
+Task 4: Release=136
+Task 1: Deadline=137
+Task 2: Deadline=138
+Task 3: Deadline=140
+Task 4: Deadline=152
 
-T: 128 Task 1 begins
-T: 128 Task 1 finished
-T: 128 Task 2 begins
-T: 128 Task 2 finished
-T: 128 Task 3 begins
-T: 132 Task 3 missed deadline
-T: 132 Task 3 finished
-T: 132 Task 4 begins
-T: 144 Task 4 missed deadline
-T: 144 Task 4 cannot complete
+T: 136 Task 1 continues
+T: 136 Task 1 finished
+T: 136 Task 2 begins
+T: 137 Task 2 finished
+T: 138 Task 3 begins
+T: 140 Task 3 missed deadline
+T: 140 Task 4 begins
+T: 148 Task 4 finished
 
-Task 1: Release=144
-Task 2: Release=144
-Task 3: Release=144
-Task 4: Release=144
-Task 1: Deadline=145
-Task 2: Deadline=146
-Task 3: Deadline=148
-Task 4: Deadline=160
+Task 1: Release=153
+Task 2: Release=153
+Task 3: Release=153
+Task 4: Release=153
+Task 1: Deadline=154
+Task 2: Deadline=155
+Task 3: Deadline=157
+Task 4: Deadline=169
 
-T: 144 Task 1 begins
-T: 144 Task 1 finished
-T: 144 Task 2 begins
-T: 144 Task 2 finished
-T: 144 Task 3 begins
-T: 148 Task 3 missed deadline
-T: 148 Task 3 finished
-T: 148 Task 4 begins
-T: 160 Task 4 missed deadline
-T: 160 Task 4 cannot complete
+T: 153 Task 1 begins
+T: 153 Task 1 finished
+T: 153 Task 2 begins
+T: 153 Task 2 finished
+T: 154 Task 3 continues
+T: 154 Task 3 finished
+T: 154 Task 4 begins
+T: 164 Task 4 finished
 
+Task 1 ran 9 times.
+Task 1 overran 1 times.
 
-Task 1 ran 10 times.
-Task 1 overran 0 times.
 Task 2 ran 10 times.
-Task 2 overran 1 times.
-Task 3 ran 10 times.
-Task 3 overran 10 times.
+Task 2 overran 0 times.
+
+Task 3 ran 4 times.
+Task 3 overran 6 times.
+
 Task 4 ran 10 times.
-Task 4 overran 7 times.
+Task 4 overran 0 times.
+
+

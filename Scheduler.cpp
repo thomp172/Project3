@@ -17,24 +17,10 @@ int main()
 		file = "Case" + to_string(r) + ".out";
 		cout << "loading " << file << endl;
 		out.open(file);
-		int m;
-		for (int i = 0; i < 10; i++)
-		{//repeat program 10 times
-			Scheduler* sch = new Scheduler(i * 16,r);
-			output += sch->getOutput() + "\n\n";
-			for (m = 0; m < 4; m++)
-			{
-				start[m] += sch->getExe()[m];
-				run[m] += sch->getRun()[m];
-			}
-
-		}
+		Scheduler* sch = new Scheduler(0,r);
+		output += sch->toString() + "\n\n";
 		out << output << endl;
-		for (int j = 0; j < 4; j++)
-		{
-			out << "Task " + to_string(j + 1) + " ran " + to_string(start[j]) + " times." << endl;
-			out << "Task " + to_string(j + 1) + " overran " + to_string(run[j]) + " times." << endl;
-		}
+		
 		out.close();
 	}
 
@@ -47,7 +33,7 @@ Scheduler::Scheduler()
 {
 	//timer begins at 0
 	t = 0;
-	repeat = 10000;
+	repeat = 1;
 	init();
 	begin();
 }
@@ -88,11 +74,7 @@ void Scheduler::init()
 			work[i][j] = 1;
 		}
 	}
-	//initialize semaphores
-	sem1 = new Semaphore();
-	sem2 = new Semaphore();
-	sem3 = new Semaphore();
-	sem4 = new Semaphore();
+	
 
 	//initialize counters
 	for (int m = 0; m < 4; m++)
@@ -103,33 +85,47 @@ void Scheduler::init()
 	//initialize output
 	output = "";
 
-	output += "Task 1: Release=" + to_string(t);
-	output += "\nTask 2: Release=" + to_string(t);
-	output += "\nTask 3: Release=" + to_string(t);
-	output += "\nTask 4: Release=" + to_string(t);
-	output += "\nTask 1: Deadline=" + to_string(TASK1+t);
-	output += "\nTask 2: Deadline=" + to_string(TASK2+t);
-	output += "\nTask 3: Deadline=" + to_string(TASK3+t);
-	output += "\nTask 4: Deadline=" + to_string(TASK4+t);
-	output += "\n";
+	
 	
 	//begin();
 }
 void Scheduler::begin()
 {
-	thrT = thread([&](Scheduler * sch) {
-		sch->timer();
-	}, this);
-	thrT.join();
-
+	bool1 = true;
+	bool2 = true;
+	bool3 = true;
+	bool4 = true;
+	//initialize semaphores
+	sem1 = new Semaphore();
+	sem2 = new Semaphore();
+	sem3 = new Semaphore();
+	sem4 = new Semaphore();
+	for (int i = 0; i < 10; i++)
+	{
+		thrT[i] = thread([&](Scheduler * sch) {
+			
+			output += "\n\nTask 1: Release=" + to_string(t);
+			output += "\nTask 2: Release=" + to_string(t);
+			output += "\nTask 3: Release=" + to_string(t);
+			output += "\nTask 4: Release=" + to_string(t);
+			output += "\nTask 1: Deadline=" + to_string(TASK1 + t);
+			output += "\nTask 2: Deadline=" + to_string(TASK2 + t);
+			output += "\nTask 3: Deadline=" + to_string(TASK3 + t);
+			output += "\nTask 4: Deadline=" + to_string(TASK4 + t);
+			output += "\n";
+			sch->timer(i);
+		}, this);
+		thrT[i].join();
+	}
+	
 }
 
-void Scheduler::execute(int unit, Semaphore* semThis, string task, int &run)
+void Scheduler::execute(int unit, Semaphore*& semThis, Semaphore*& semNext, bool boolThis, string task, int &run)
 {
-	semThis->wait();
 	//set processor affinity
 	HANDLE hProcess = GetCurrentProcess();
 	SetProcessAffinityMask(hProcess, 1);
+	//semThis->wait();
 	bool overrun = false;
 	output += "\nT: " + to_string(t) + " " + task + " begins";
 	//repeat doWork() as many times as there are units
@@ -138,16 +134,31 @@ void Scheduler::execute(int unit, Semaphore* semThis, string task, int &run)
 	{
 		while (overrun == false)
 			overrun = doWork(unit, task, run);
+		if (overrun == true)
+		{
+			boolThis = false;
+			semNext->signal();
+			semThis->wait();
+			output += "\nT: " + to_string(t) + " " + task + " continues";
+		}
 	}
 	else
 	{
 		for (int i = 0; i < unit; i++)
 		{
 			overrun = doWork(unit, task, run);
-			if ((overrun == true) && (unit == TASK4))
-				return;
+			if (overrun == true)
+			{
+				boolThis = false;
+				semNext->signal();
+				semThis->wait();
+				output += "\nT: " + to_string(t) + " " + task + " continues";
+			}
+			/*if ((overrun == true) && (unit == TASK4))
+				return;*/
 		}
 	}
+	
 	output += "\nT: " + to_string(t) + " " + task + " finished";
 
 }
@@ -155,7 +166,7 @@ bool Scheduler::doWork(int unit, string task, int& run)
 {
 	bool overrun = false;
 	int m, n, temp;
-	for (int i=0; i<10500; i++)
+	for (int i=0; i<10200; i++)
 	{
 		//exit function if time deadline is hit
 		if ((time >= unit) && (overrun == false))
@@ -164,11 +175,7 @@ bool Scheduler::doWork(int unit, string task, int& run)
 			//return;
 			run++;
 			overrun = true;
-			if ((overrun == true) && (unit == TASK4))
-			{
-				output += "\nT: " + to_string(t) + " " + task + " cannot complete";
-				return overrun;
-			}
+			return overrun;
 		}
 		//execute multiplication of array
 		for (m = 0; m < SIZE; m++)
@@ -184,7 +191,7 @@ bool Scheduler::doWork(int unit, string task, int& run)
 	return overrun;
 }
 
-void Scheduler::timer()
+void Scheduler::timer(int period)
 {
 	//set processor affinity
 	HANDLE hProcess = GetCurrentProcess();
@@ -195,25 +202,46 @@ void Scheduler::timer()
 		if (time == 0)
 		{//initiate thread start
 			//task threads
-			thr1 = thread([&](Scheduler * sch) {
-				execute(TASK1, sem1, "Task 1", run[0]);
+			thr1[period] = thread([&](Scheduler * sch) {
+				sem1->wait();
+				execute(TASK1, sem1, sem2, bool1, "Task 1", run[0]);
 				exe[0]++;
+				bool1 = true;
 				sem2->signal();
+				
 			}, this);
-			thr2 = thread([&](Scheduler * sch) {
-				execute(TASK2, sem2, "Task 2", run[1]);
+			if (bool1 == false)
+				thr1[period].swap(thr1[period - 1]);
+			thr2[period] = thread([&](Scheduler * sch) {
+				sem2->wait();
+				execute(TASK2, sem2, sem3, bool2, "Task 2", run[1]);
 				exe[1]++;
+				bool2 = true;
 				sem3->signal();
+				
 			}, this);
-			thr3 = thread([&](Scheduler * sch) {
-				execute(TASK3, sem3, "Task 3", run[2]);
+			if (bool2 == false)
+				thr2[period].swap(thr2[period - 1]);
+			thr3[period] = thread([&](Scheduler * sch) {
+				sem3->wait();
+				execute(TASK3, sem3, sem4, bool3, "Task 3", run[2]);
 				exe[2]++;
+				bool3 = true;
+				
 				sem4->signal();
+				
 			}, this);
-			thr4 = thread([&](Scheduler * sch) {
-				execute(TASK4, sem4, "Task 4", run[3]);
+			if (bool3 == false)
+				thr3[period].swap(thr3[period - 1]);
+			thr4[period] = thread([&](Scheduler * sch) {
+				sem4->wait();
+				execute(TASK4, sem4, sem1, bool4, "Task 4", run[3]);
 				exe[3]++;
+				bool4 = true;
+				
 			}, this);
+			if (bool1 == false)
+				thr4[period].swap(thr4[period - 1]);
 			sem1->signal();
 		}
 		chrono::milliseconds dura(SLEEP);
@@ -222,10 +250,10 @@ void Scheduler::timer()
 		time++;
 		if (time == 0)
 		{
-			thr1.join();
-			thr2.join();
-			thr3.join();
-			thr4.join();
+			thr1[period].join();
+			thr2[period].join();
+			thr3[period].join();
+			thr4[period].join();
 		}
 	}
 
@@ -250,7 +278,7 @@ string Scheduler::toString()
 	string counts = "";
 	for (int j = 0; j < 4; j++)
 	{
-		counts += "\nTask " + to_string(j + 1) + " ran " + to_string(exe[j]) + " times.";
+		counts += "\n\nTask " + to_string(j + 1) + " ran " + to_string(exe[j]) + " times.";
 		counts += "\nTask " + to_string(j + 1) + " overran " + to_string(run[j]) + " times.";
 	}
 	return output + counts;

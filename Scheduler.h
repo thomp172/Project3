@@ -37,11 +37,15 @@ private:
 	Semaphore* sem2;
 	Semaphore* sem3;
 	Semaphore* sem4;
-	thread thrT;
-	thread thr1;
-	thread thr2;
-	thread thr3;
-	thread thr4;
+	thread thrT[SIZE];
+	thread thr1[SIZE];
+	thread thr2[SIZE];
+	thread thr3[SIZE];
+	thread thr4[SIZE];
+	bool bool1;
+	bool bool2;
+	bool bool3;
+	bool bool4;
 
 	int exe[4];
 	int run[4];
@@ -51,9 +55,9 @@ private:
 	void begin();
 
 	//thread
-	void execute(int unit, Semaphore* semThis, string task, int& run);
+	void execute(int unit, Semaphore*& semThis, Semaphore*& semNext, bool boolThis, string task, int& run);
 	bool doWork(int unit, string task, int& run);
-	void timer();
+	void timer(int period);
 	
 	
 };
