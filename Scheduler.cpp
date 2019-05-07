@@ -132,14 +132,16 @@ void Scheduler::execute(int unit, Semaphore*& semThis, Semaphore*& semNext, bool
 	
 	if (((repeat == 2) && (unit == TASK2)) || ((repeat == 3) && (unit == TASK3)))
 	{
-		while (overrun == false)
-			overrun = doWork(unit, task, run);
-		if (overrun == true)
+		while (true)
 		{
-			boolThis = false;
-			semNext->signal();
-			semThis->wait();
-			output += "\nT: " + to_string(t) + " " + task + " continues";
+			overrun = doWork(unit, task, run);
+			if (overrun == true)
+			{
+				boolThis = false;
+				semNext->signal();
+				semThis->wait();
+				output += "\nT: " + to_string(t) + " " + task + " continues";
+			}
 		}
 	}
 	else
@@ -154,8 +156,6 @@ void Scheduler::execute(int unit, Semaphore*& semThis, Semaphore*& semNext, bool
 				semThis->wait();
 				output += "\nT: " + to_string(t) + " " + task + " continues";
 			}
-			/*if ((overrun == true) && (unit == TASK4))
-				return;*/
 		}
 	}
 	
@@ -204,8 +204,9 @@ void Scheduler::timer(int period)
 			//task threads
 			thr1[period] = thread([&](Scheduler * sch) {
 				sem1->wait();
-				execute(TASK1, sem1, sem2, bool1, "Task 1", run[0]);
 				exe[0]++;
+				execute(TASK1, sem1, sem2, bool1, "Task 1", run[0]);
+				
 				bool1 = true;
 				sem2->signal();
 				
@@ -214,8 +215,9 @@ void Scheduler::timer(int period)
 				thr1[period].swap(thr1[period - 1]);
 			thr2[period] = thread([&](Scheduler * sch) {
 				sem2->wait();
-				execute(TASK2, sem2, sem3, bool2, "Task 2", run[1]);
 				exe[1]++;
+				execute(TASK2, sem2, sem3, bool2, "Task 2", run[1]);
+				
 				bool2 = true;
 				sem3->signal();
 				
@@ -224,8 +226,9 @@ void Scheduler::timer(int period)
 				thr2[period].swap(thr2[period - 1]);
 			thr3[period] = thread([&](Scheduler * sch) {
 				sem3->wait();
-				execute(TASK3, sem3, sem4, bool3, "Task 3", run[2]);
 				exe[2]++;
+				execute(TASK3, sem3, sem4, bool3, "Task 3", run[2]);
+				
 				bool3 = true;
 				
 				sem4->signal();
@@ -235,8 +238,9 @@ void Scheduler::timer(int period)
 				thr3[period].swap(thr3[period - 1]);
 			thr4[period] = thread([&](Scheduler * sch) {
 				sem4->wait();
-				execute(TASK4, sem4, sem1, bool4, "Task 4", run[3]);
 				exe[3]++;
+				execute(TASK4, sem4, sem1, bool4, "Task 4", run[3]);
+				
 				bool4 = true;
 				
 			}, this);

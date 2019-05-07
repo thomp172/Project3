@@ -34,7 +34,7 @@ T: 17 Task 2 finished
 T: 17 Task 3 begins
 T: 17 Task 3 finished
 T: 18 Task 4 begins
-T: 28 Task 4 finished
+T: 29 Task 4 finished
 
 Task 1: Release=34
 Task 2: Release=34
@@ -70,7 +70,7 @@ T: 51 Task 2 finished
 T: 51 Task 3 begins
 T: 51 Task 3 finished
 T: 52 Task 4 begins
-T: 62 Task 4 finished
+T: 63 Task 4 finished
 
 Task 1: Release=68
 Task 2: Release=68
@@ -124,7 +124,7 @@ T: 102 Task 2 finished
 T: 102 Task 3 begins
 T: 102 Task 3 finished
 T: 103 Task 4 begins
-T: 112 Task 4 finished
+T: 113 Task 4 finished
 
 Task 1: Release=119
 Task 2: Release=119
@@ -158,9 +158,9 @@ T: 136 Task 1 finished
 T: 136 Task 2 begins
 T: 136 Task 2 finished
 T: 136 Task 3 begins
-T: 136 Task 3 finished
+T: 137 Task 3 finished
 T: 137 Task 4 begins
-T: 147 Task 4 finished
+T: 145 Task 4 finished
 
 Task 1: Release=153
 Task 2: Release=153
@@ -178,7 +178,7 @@ T: 153 Task 2 finished
 T: 153 Task 3 begins
 T: 153 Task 3 finished
 T: 154 Task 4 begins
-T: 164 Task 4 finished
+T: 163 Task 4 finished
 
 Task 1 ran 10 times.
 Task 1 overran 0 times.
