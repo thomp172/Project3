@@ -55,8 +55,9 @@ private:
 	void begin();
 
 	//thread
-	void execute(int unit, Semaphore*& semThis, Semaphore*& semNext, bool boolThis, string task, int& run);
-	bool doWork(int unit, string task, int& run);
+	void execute(int unit, Semaphore*& semThis, Semaphore*& semNext, 
+		bool& boolThis, int task, int& run, int p);
+	bool doWork(int unit, int task, int& run, int p);
 	void timer(int period);
 	
 	

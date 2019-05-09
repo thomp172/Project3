@@ -24,7 +24,7 @@ int main()
 		out.close();
 	}
 
-	cout << "done" << endl;
+	cout << "Finished" << endl;
 	
 }
 
@@ -55,6 +55,8 @@ Scheduler::~Scheduler()
 	delete sem2;
 	delete sem3;
 	delete sem4;
+	delete exe;
+	delete run;
 }
 
 
@@ -86,7 +88,6 @@ void Scheduler::init()
 	output = "";
 
 	
-	
 	//begin();
 }
 void Scheduler::begin()
@@ -115,32 +116,37 @@ void Scheduler::begin()
 			output += "\n";
 			sch->timer(i);
 		}, this);
+		
 		thrT[i].join();
 	}
-	
 }
 
-void Scheduler::execute(int unit, Semaphore*& semThis, Semaphore*& semNext, bool boolThis, string task, int &run)
+void Scheduler::execute(int unit, Semaphore*& semThis, 
+	Semaphore*& semNext, bool& boolThis, int task, int &run, int p)
 {
 	//set processor affinity
 	HANDLE hProcess = GetCurrentProcess();
 	SetProcessAffinityMask(hProcess, 1);
 	//semThis->wait();
 	bool overrun = false;
-	output += "\nT: " + to_string(t) + " " + task + " begins";
+	output += "\nT: " + to_string(t) + " Task " + to_string(task) + " begins";
 	//repeat doWork() as many times as there are units
 	
 	if (((repeat == 2) && (unit == TASK2)) || ((repeat == 3) && (unit == TASK3)))
 	{
-		while (true)
+		//push thread to remain in overrun condition
+		bool cont = true;
+		while (cont == true)
 		{
-			overrun = doWork(unit, task, run);
+			overrun = doWork(unit, task, run, p);
 			if (overrun == true)
 			{
 				boolThis = false;
+				if (t >= CYCLE * 10)
+					return;
 				semNext->signal();
 				semThis->wait();
-				output += "\nT: " + to_string(t) + " " + task + " continues";
+				output += "\nT: " + to_string(t) + " Task " + to_string(task) + " continues";
 			}
 		}
 	}
@@ -148,21 +154,23 @@ void Scheduler::execute(int unit, Semaphore*& semThis, Semaphore*& semNext, bool
 	{
 		for (int i = 0; i < unit; i++)
 		{
-			overrun = doWork(unit, task, run);
+			overrun = doWork(unit, task, run, p);
 			if (overrun == true)
 			{
 				boolThis = false;
+				if (t > CYCLE * 10)
+					return;
 				semNext->signal();
 				semThis->wait();
-				output += "\nT: " + to_string(t) + " " + task + " continues";
+				output += "\nT: " + to_string(t) + " Task " + to_string(task) + " continues";
 			}
 		}
 	}
-	
-	output += "\nT: " + to_string(t) + " " + task + " finished";
+	boolThis = true;
+	output += "\nT: " + to_string(t) + " Task " + to_string(task) + " finished";
 
 }
-bool Scheduler::doWork(int unit, string task, int& run)
+bool Scheduler::doWork(int unit, int task, int& run, int p)
 {
 	bool overrun = false;
 	int m, n, temp;
@@ -171,7 +179,7 @@ bool Scheduler::doWork(int unit, string task, int& run)
 		//exit function if time deadline is hit
 		if ((time >= unit) && (overrun == false))
 		{
-			output += "\nT: " + to_string(t) + " " + task + " missed deadline";
+			output += "\nT: " + to_string(t) + " Task " + to_string(task) + " missed deadline";
 			//return;
 			run++;
 			overrun = true;
@@ -202,50 +210,48 @@ void Scheduler::timer(int period)
 		if (time == 0)
 		{//initiate thread start
 			//task threads
-			thr1[period] = thread([&](Scheduler * sch) {
-				sem1->wait();
-				exe[0]++;
-				execute(TASK1, sem1, sem2, bool1, "Task 1", run[0]);
-				
-				bool1 = true;
-				sem2->signal();
-				
-			}, this);
-			if (bool1 == false)
-				thr1[period].swap(thr1[period - 1]);
-			thr2[period] = thread([&](Scheduler * sch) {
-				sem2->wait();
-				exe[1]++;
-				execute(TASK2, sem2, sem3, bool2, "Task 2", run[1]);
-				
-				bool2 = true;
-				sem3->signal();
-				
-			}, this);
-			if (bool2 == false)
-				thr2[period].swap(thr2[period - 1]);
-			thr3[period] = thread([&](Scheduler * sch) {
-				sem3->wait();
-				exe[2]++;
-				execute(TASK3, sem3, sem4, bool3, "Task 3", run[2]);
-				
-				bool3 = true;
-				
-				sem4->signal();
-				
-			}, this);
-			if (bool3 == false)
-				thr3[period].swap(thr3[period - 1]);
-			thr4[period] = thread([&](Scheduler * sch) {
-				sem4->wait();
-				exe[3]++;
-				execute(TASK4, sem4, sem1, bool4, "Task 4", run[3]);
-				
-				bool4 = true;
-				
-			}, this);
-			if (bool1 == false)
-				thr4[period].swap(thr4[period - 1]);
+			if (bool1 == true)
+			{
+				thr1[period] = thread([&](Scheduler * sch) {
+					sem1->wait();
+					exe[0]++;
+					execute(TASK1, sem1, sem2, bool1, 1, run[0], period);
+
+					sem2->signal();
+				}, this);
+			}
+			if (bool2 == true)
+			{
+				thr2[period] = thread([&](Scheduler * sch) {
+					sem2->wait();
+					exe[1]++;
+					execute(TASK2, sem2, sem3, bool2, 2, run[1], period);
+
+					sem3->signal();
+
+				}, this);
+			}
+			if (bool3 == true)
+			{
+				thr3[period] = thread([&](Scheduler * sch) {
+					sem3->wait();
+					exe[2]++;
+					execute(TASK3, sem3, sem4, bool3, 3, run[2], period);
+
+					sem4->signal();
+
+				}, this);
+			}
+			if (bool4 == true)
+			{
+				thr4[period] = thread([&](Scheduler * sch) {
+					sem4->wait();
+					exe[3]++;
+					execute(TASK4, sem4, sem1, bool4, 4, run[3], period);
+
+				}, this);
+			}
+			
 			sem1->signal();
 		}
 		chrono::milliseconds dura(SLEEP);
@@ -254,10 +260,14 @@ void Scheduler::timer(int period)
 		time++;
 		if (time == 0)
 		{
-			thr1[period].join();
-			thr2[period].join();
-			thr3[period].join();
-			thr4[period].join();
+			if (bool1 == true)
+				thr1[period].join();
+			if (bool2 == true)
+				thr2[period].join();
+			if (bool3 == true)
+				thr3[period].join();
+			if (bool4 == true)
+				thr4[period].join();
 		}
 	}
 
